@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "Neon": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.neon.tech/sse"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/wangxunxun/workspace"
+      ]
+    }
+  }
+}
