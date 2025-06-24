@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "ts-node src/mcp/index.ts",
+    "inspect": "DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector -- ts-node src/mcp/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -35,11 +37,14 @@
     ]
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.1",
     "inquire": "^0.4.8",
     "inquirer": "^10.2.2",
     "koa": "^3.0.0",
     "koa-router": "^13.0.1",
-    "openai": "^5.3.0"
+    "open": "^10.1.2",
+    "openai": "^5.3.0",
+    "zod": "^3.25.67"
   },
   "prettier": {
     "semi": false,
