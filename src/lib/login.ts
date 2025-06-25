@@ -5,22 +5,22 @@ import { generateSign, getRc, setRc } from './utils'
 import open from 'open'
 
 class Login {
+  token: any
   getToken() {
     return getRc().token
   }
   setToken(data: any) {
     return setRc({ token: data })
   }
-  doLogin() {
-    const token = this.getToken()
-    if (token) {
-      return token
-    } else {
-      const p = this.loginCallback()
-      open(LOGIN_URL)
-      debugger
-      return p
+  clearToken() {
+    this.token = ''
+    return setRc({ token: '' })
+  }
+  async doLogin() {
+    if (!this.token) {
+      this.token = this.getToken() || await this.loginCallback()
     }
+    return this.token
   }
   loginCallback() {
     return new Promise((resolve, reject) => {

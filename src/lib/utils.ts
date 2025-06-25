@@ -1,6 +1,7 @@
 import * as crypto from 'crypto'
 import fs from "fs"
 import { RC_PATH, CLIENT_ID, CLIENT_SECRET, PDD_BASE_URL } from "./const"
+import login from "./login"
 
 export const generateSign = (params: Record<string, any>, clientSecret: string) => {
   // 1. 所有参数首字母ASCII升序排序
@@ -39,8 +40,9 @@ export const getRc = () => {
 export const getPddApi = async (
   type: string,
   bizParams: Record<string, any>,
-  access_token?: string
-) => {
+): Promise<any> => {
+  const token = await login.doLogin()
+  const access_token = token.access_token
   const timestamp = Math.floor(Date.now() / 1000)
   const params: Record<string, any> = {
     type,
@@ -57,6 +59,10 @@ export const getPddApi = async (
     body: JSON.stringify(params),
   })
   const data = await res.json()
+  if (data?.error_response?.error_code === 10019) {
+    login.clearToken()
+    return getPddApi(type, bizParams)
+  }
   return data
 }
 

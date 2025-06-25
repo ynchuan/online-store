@@ -15,14 +15,19 @@ export const register = (server: McpServer) => {
       page_size: z.number().optional().default(100).describe("每页数量，默认100"),
     },
     async ({ keyword, page = 1, page_size = 100 }) => {
-      const token = await login.doLogin()
-      if (token) {
-        const data = await getPddApi('pdd.ddk.goods.search', { keyword, page, page_size }, token.access_token)
-        return { content: [{ type: "text", text: JSON.stringify(data, null, 1) }], }
-      } else {
-        return { content: [{ type: "text", text: "请先登录" }], }
-      }
-
+      const data = await getPddApi('pdd.ddk.goods.search', { page, page_size })
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 1) }], }
+    },
+  )
+  server.tool(
+    "pdd.goods.opt.get",
+    "查询商品标签列表，详见 https://open.pinduoduo.com/application/document/api?id=pdd.goods.opt.get",
+    {
+      parent_opt_id: z.number().optional().default(0).describe("值=0时为顶点opt_id,通过树顶级节点获取opt树"),
+    },
+    async ({ parent_opt_id }) => {
+      const data = await getPddApi('pdd.goods.opt.get', { parent_opt_id })
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 1) }], }
     },
   )
 }
