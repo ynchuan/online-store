@@ -1,5 +1,6 @@
 import * as crypto from 'crypto'
 import fs from "fs"
+import { isEmpty, isObject } from "lodash"
 import { RC_PATH, CLIENT_ID, CLIENT_SECRET, PDD_BASE_URL } from "./const"
 import login from "./login"
 
@@ -44,6 +45,11 @@ export const getPddApi = async (
   const token = await login.doLogin()
   const access_token = token.access_token
   const timestamp = Math.floor(Date.now() / 1000)
+  Object.keys(bizParams).forEach((key) => {
+    if (isObject(bizParams[key]) && isEmpty(bizParams[key])) {
+      delete bizParams[key]
+    }
+  })
   const params: Record<string, any> = {
     type,
     client_id: CLIENT_ID,
