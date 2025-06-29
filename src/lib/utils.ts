@@ -2,21 +2,18 @@ import * as crypto from 'crypto'
 import fs from "fs"
 import { isEmpty, isObject } from "lodash"
 import { RC_PATH, CLIENT_ID, CLIENT_SECRET, PDD_BASE_URL } from "./const"
-import login from "./login"
+import { pddLogin } from "./login"
 
 export const generateSign = (params: Record<string, any>, clientSecret: string) => {
-  // 1. 所有参数首字母ASCII升序排序
-  const sortedKeys = Object.keys(params).sort()
-  // 2. 按照 key+value 拼接
-  let str = ''
-  for (const key of sortedKeys) {
-    str += key + params[key]
-  }
-  // 3. 前后拼接 client_secret
+  const str = Object.keys(params).sort().reduce((str, key) => {
+    const value = params[key]
+    str += key + value
+    return str
+  }, '')
   const signStr = clientSecret + str + clientSecret
-  // 4. MD5 并转大写
   return crypto.createHash('md5').update(signStr).digest('hex').toUpperCase()
 }
+
 export const setRc = (data: any) => {
   const rc = getRc()
   Object.assign(rc, data)
@@ -32,24 +29,33 @@ export const getRc = () => {
   }
 }
 
+const adapterBizParams = (bizParams: any) => {
+  Object.keys(bizParams).forEach((key) => {
+    const value = bizParams[key]
+    if (isObject(value)) {
+      if (isEmpty(value)) {
+        delete bizParams[key]
+      } else {
+        bizParams[key] = JSON.stringify(value)
+      }
+    }
+  })
+}
+
 /**
- * 调用拼多多开放平台官方API
- * @param type API接口名，如"pdd.ddk.goods.search"
- * @param bizParams 业务参数对象
- * @param access_token 用户授权token（可选）
- */
+* 调用拼多多开放平台官方API
+* @param type API接口名，如"pdd.ddk.goods.search"
+* @param bizParams 业务参数对象
+* @param access_token 用户授权token（可选）
+*/
 export const getPddApi = async (
   type: string,
   bizParams: Record<string, any>,
 ): Promise<any> => {
-  const token = await login.doLogin()
+  const token = await pddLogin.doLogin()
   const access_token = token.access_token
   const timestamp = Math.floor(Date.now() / 1000)
-  Object.keys(bizParams).forEach((key) => {
-    if (isObject(bizParams[key]) && isEmpty(bizParams[key])) {
-      delete bizParams[key]
-    }
-  })
+  adapterBizParams(bizParams)
   const params: Record<string, any> = {
     type,
     client_id: CLIENT_ID,
@@ -66,10 +72,8 @@ export const getPddApi = async (
   })
   const data = await res.json()
   if (data?.error_response?.error_code === 10019) {
-    login.clearToken()
+    pddLogin.clearToken()
     return getPddApi(type, bizParams)
   }
   return data
 }
-
-

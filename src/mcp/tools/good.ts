@@ -5,7 +5,7 @@ import { getPddApi } from "../../lib/utils"
 
 export const register = (server: McpServer) => {
   server.tool(
-    "pdd.ddk.goods.search",
+    "pdd.ddk.goods.search1",
     "多多进宝商品查询，详见 https://open.pinduoduo.com/application/document/api?id=pdd.ddk.goods.search",
     {
       keyword: z.string().optional().describe("商品关键词，可选"),
