@@ -1,28 +1,25 @@
 #!/usr/bin/env node
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
-import { register as registerGoods } from "./tools/goods"
-import { register as registerCommon } from "./tools/common"
-import { register as registerGood } from "./tools/good"
 
-const server = new McpServer(
-  {
-    name: "mcp-online-store",
-    version: "1.0.0",
-  }
-)
+import stdio from './stdio'
+import stream from './stream'
+import sse from './sse'
+import stateless from './stateless'
 
-registerGoods(server)
-registerCommon(server)
-registerGood(server)
-
-async function main() {
-  const transport = new StdioServerTransport()
-  await server.connect(transport)
-  console.error("High-level Output Schema Example Server running on stdio")
+const starts = {
+  stdio: stdio,
+  stream: stream,
+  sse: sse,
+  stateless: stateless,
 }
 
-main().catch((error) => {
-  console.error("Server error:", error)
+let main
+try {
+  const trans = process.env.TRANSPORT || 'stateless'
+  const res = starts[trans as keyof typeof starts]()
+  main = res?.main
+  console.error('mcp server started by mode:', trans)
+} catch (error) {
+  console.error('Server error:', error)
   process.exit(1)
-})
+}
+export default main

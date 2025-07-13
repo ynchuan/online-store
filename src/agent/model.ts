@@ -4,7 +4,15 @@ export class Model {
   private openai: OpenAI
   private modelName: string
 
-  constructor({ apiKey, baseURL, modelName }: { apiKey: string; baseURL: string; modelName: string }) {
+  constructor({
+    apiKey,
+    baseURL,
+    modelName,
+  }: {
+    apiKey: string
+    baseURL: string
+    modelName: string
+  }) {
     this.openai = new OpenAI({
       apiKey,
       baseURL,
@@ -20,4 +28,4 @@ export class Model {
     })
     return completion.choices[0]?.message?.content || ''
   }
-} 
+}

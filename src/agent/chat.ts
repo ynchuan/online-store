@@ -6,7 +6,7 @@ import { ChatMessage } from './type'
 export class ChatSession {
   private model: Model
   private mcp: MCPMultiClient
-  private history: ChatMessage[] = [];
+  private history: ChatMessage[] = []
 
   constructor(model: Model, mcp: MCPMultiClient) {
     this.model = model
@@ -19,7 +19,10 @@ export class ChatSession {
 
   async handleUserInput(input: string): Promise<string> {
     this.appendHistory({ role: 'user', content: input })
-    const messages = this.history.map(({ role, content }) => ({ role, content }))
+    const messages = this.history.map(({ role, content }) => ({
+      role,
+      content,
+    }))
     // 这里只调用 LLM，可扩展为自动调用 tool
     const output = await this.model.chat(messages)
     this.appendHistory({ role: 'assistant', content: output })
@@ -43,4 +46,4 @@ export class ChatSession {
       console.log('AI:', output)
     }
   }
-} 
+}
