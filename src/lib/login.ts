@@ -15,7 +15,6 @@ import {
   LOGIN_REDIRECT_URI,
 } from './const'
 import { generateSign, getRc, setRc } from './utils'
-import open from 'open'
 
 type GetTokenByCode = (code: string) => Promise<any>
 
@@ -73,6 +72,7 @@ class BaseLogin {
       app.use(router.routes())
       app.use(router.allowedMethods())
       server = app.listen(LOGIN_PORT)
+      const { default: open } = await import('open')
       open(this.loginUrl)
     })
   }
