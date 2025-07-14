@@ -72,8 +72,8 @@ class BaseLogin {
       app.use(router.routes())
       app.use(router.allowedMethods())
       server = app.listen(LOGIN_PORT)
-      const { default: open } = await import('open')
-      open(this.loginUrl)
+      // const { default: open } = await import('open')
+      // open(this.loginUrl)
     })
   }
 }
