@@ -18,6 +18,9 @@ try {
   const res = starts[trans as keyof typeof starts]()
   main = res?.main
   console.error('mcp server started by mode:', trans)
+  if (process.env.TRANSPORT) {
+    res?.listen()
+  }
 } catch (error) {
   console.error('Server error:', error)
   process.exit(1)

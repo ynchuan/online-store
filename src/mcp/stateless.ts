@@ -18,6 +18,14 @@ export default () => {
   const router = new Router()
   router.post('/mcp', async (ctx) => {
     // 每次请求都新建 server/transport
+    console.log(
+      'stateless mcp request: ' +
+        JSON.stringify({
+          url: ctx.url,
+          query: ctx.query,
+          headers: ctx.headers,
+        }),
+    )
     const server = createServer()
     const body = (ctx.request as any).body
     const transport = new StreamableHTTPServerTransport({
@@ -39,7 +47,7 @@ export default () => {
 
   // 禁用 GET /mcp，stateless 不支持 SSE/长连接
   router.get('/mcp', async (ctx) => {
-    ctx.status = 405
+    ctx.status = 200
     ctx.body = unValidedMsg('Method not allowed in stateless mode')
   })
 
