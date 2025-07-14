@@ -1,0 +1,2 @@
+api/**/*
+!api/mcp/index.js
