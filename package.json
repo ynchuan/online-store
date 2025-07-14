@@ -7,9 +7,10 @@
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
     "prepare": "husky install",
-    "build": "tsc",
     "dev:ts": "ts-node src/mcp/index.ts",
+    "build:ts": "tsc",
     "dev:vercel": "vercel dev",
+    "build:vercel": "vercel build",
     "inspect": "DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector -- ts-node src/mcp/index.ts"
   },
   "keywords": [],

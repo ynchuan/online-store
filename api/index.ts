@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import stdio from './stdio'
-import stream from './stream'
-import sse from './sse'
-import stateless from './stateless'
+import stdio from '../src/mcp/stdio'
+import stream from '../src/mcp/stream'
+import sse from '../src/mcp/sse'
+import stateless from '../src/mcp/stateless'
 
 const starts = {
   stdio: stdio,
