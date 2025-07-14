@@ -57,6 +57,7 @@ class BaseLogin {
   }
 
   async triggerLogin(): Promise<any> {
+    const { default: open } = await import('open')
     return new Promise((resolve) => {
       const app = new Koa()
       const router = new Router()
@@ -72,8 +73,7 @@ class BaseLogin {
       app.use(router.routes())
       app.use(router.allowedMethods())
       server = app.listen(LOGIN_PORT)
-      // const { default: open } = await import('open')
-      // open(this.loginUrl)
+      open(this.loginUrl)
     })
   }
 }
