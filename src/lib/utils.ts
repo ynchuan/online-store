@@ -1,15 +1,20 @@
 import * as crypto from 'crypto'
-import fs from "fs"
-import { isEmpty, isObject } from "lodash"
-import { RC_PATH, CLIENT_ID, CLIENT_SECRET, PDD_BASE_URL } from "./const"
-import { pddLogin } from "./login"
+import fs from 'fs'
+import { isEmpty, isObject } from 'lodash'
+import { RC_PATH, CLIENT_ID, CLIENT_SECRET, PDD_BASE_URL } from './const'
+import { pddLogin } from './login'
 
-export const generateSign = (params: Record<string, any>, clientSecret: string) => {
-  const str = Object.keys(params).sort().reduce((str, key) => {
-    const value = params[key]
-    str += key + value
-    return str
-  }, '')
+export const generateSign = (
+  params: Record<string, any>,
+  clientSecret: string,
+) => {
+  const str = Object.keys(params)
+    .sort()
+    .reduce((str, key) => {
+      const value = params[key]
+      str += key + value
+      return str
+    }, '')
   const signStr = clientSecret + str + clientSecret
   return crypto.createHash('md5').update(signStr).digest('hex').toUpperCase()
 }
@@ -43,11 +48,11 @@ const adapterBizParams = (bizParams: any) => {
 }
 
 /**
-* 调用拼多多开放平台官方API
-* @param type API接口名，如"pdd.ddk.goods.search"
-* @param bizParams 业务参数对象
-* @param access_token 用户授权token（可选）
-*/
+ * 调用拼多多开放平台官方API
+ * @param type API接口名，如"pdd.ddk.goods.search"
+ * @param bizParams 业务参数对象
+ * @param access_token 用户授权token（可选）
+ */
 export const getPddApi = async (
   type: string,
   bizParams: Record<string, any>,
@@ -60,14 +65,14 @@ export const getPddApi = async (
     type,
     client_id: CLIENT_ID,
     timestamp,
-    data_type: "JSON",
+    data_type: 'JSON',
     access_token,
     ...bizParams,
   }
   params.sign = generateSign(params, CLIENT_SECRET)
   const res = await fetch(PDD_BASE_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
   })
   const data = await res.json()
@@ -76,4 +81,30 @@ export const getPddApi = async (
     return getPddApi(type, bizParams)
   }
   return data
+}
+
+export const unValidedMsg = (msg: string) => ({
+  jsonrpc: '2.0',
+  error: {
+    code: -32000,
+    message: msg,
+  },
+  id: null,
+})
+
+export const logger = {
+  info: (...msgs: any[]) => {
+    msgs = msgs.map((msg) =>
+      typeof msg === 'object' ? JSON.stringify(msg) : msg,
+    )
+    const msg = msgs.join(' ')
+    console.log(msg)
+  },
+  error: (...msgs: any[]) => {
+    msgs = msgs.map((msg) =>
+      typeof msg === 'object' ? JSON.stringify(msg) : msg,
+    )
+    const msg = msgs.join(' ')
+    console.error(msg)
+  },
 }

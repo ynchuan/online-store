@@ -4,25 +4,33 @@ import stdio from '../src/mcp/stdio'
 import stream from '../src/mcp/stream'
 import sse from '../src/mcp/sse'
 import stateless from '../src/mcp/stateless'
+import server from '../src/server'
+import { logger } from '../src/lib/utils'
 
-const starts = {
+const starts: any = {
   stdio: stdio,
   stream: stream,
   sse: sse,
   stateless: stateless,
 }
 
-let main
+let ret
 try {
-  const trans = process.env.TRANSPORT || 'stateless'
-  const res = starts[trans as keyof typeof starts]()
-  main = res?.main
-  console.error('mcp server started by mode:', trans)
-  if (process.env.TRANSPORT) {
-    res?.listen()
+  process.env.TRANSPORT = process.env.TRANSPORT || 'stateless'
+  const trans = process.env.TRANSPORT
+  if (trans === 'stdio') {
+    starts.stdio()
+  } else {
+    const initRouter = starts[trans]
+    const { main, listen } = server(initRouter)
+    ret = main
+    logger.error('mcp server started by mode:', trans)
+    if (process.env.TRANSPORT) {
+      listen()
+    }
   }
 } catch (error) {
-  console.error('Server error:', error)
+  logger.error('Server error:', error)
   process.exit(1)
 }
-export default main
+export default ret

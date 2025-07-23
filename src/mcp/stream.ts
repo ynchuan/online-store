@@ -1,33 +1,21 @@
-#!/usr/bin/env node
-import Koa from 'koa'
 import Router from 'koa-router'
-import bodyparser from 'koa-bodyparser'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { randomUUID } from 'crypto'
 import { createServer, getStreamTransports } from './tools'
+import { unValidedMsg, logger } from '../lib/utils'
 
-export default () => {
+const isInited = (body: any) =>
+  Array.isArray(body)
+    ? body.some((item: any) => item?.method === 'initialize')
+    : body?.method === 'initialize'
+
+export default (router: Router) => {
   const server = createServer()
   const transports = getStreamTransports()
 
-  const isInited = (body: any) =>
-    Array.isArray(body)
-      ? body.some((item: any) => item?.method === 'initialize')
-      : body?.method === 'initialize'
-  const unValidedMsg = (msg: string) => ({
-    jsonrpc: '2.0',
-    error: {
-      code: -32000,
-      message: msg,
-    },
-    id: null,
-  })
-
-  const router = new Router()
   router.post('/mcp', async (ctx) => {
     const sessionId = ctx.headers['mcp-session-id'] as string | undefined
     let transport: StreamableHTTPServerTransport
-    // 断言 any 以消除类型报错
     const body = (ctx.request as any).body
     if (sessionId && transports[sessionId]) {
       transport = transports[sessionId]
@@ -62,26 +50,6 @@ export default () => {
     ctx.respond = false // 交由 MCP transport 处理响应
   })
   router.get('/', async (ctx) => {
-    ctx.body = 'helle'
+    ctx.body = 'hello streamable mcp'
   })
-
-  const app = new Koa()
-  app.use(bodyparser())
-  app.use(router.routes())
-  app.use(router.allowedMethods())
-
-  const main = app.callback()
-
-  const listen = () => {
-    const PORT = process.env.PORT || 3001
-    app.listen(PORT, () => {
-      console.error(
-        `MCP HTTP streamable server running on http://localhost:${PORT}/mcp`,
-      )
-    })
-  }
-  return {
-    main,
-    listen,
-  }
 }
