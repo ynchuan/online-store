@@ -5,39 +5,14 @@ import { getPddApi } from '../../lib/utils'
 
 export const register = (server: McpServer) => {
   server.tool(
-    'pdd.ddk.goods.search',
-    '多多进宝商品查询，详见 https://open.pinduoduo.com/application/document/api?id=pdd.ddk.goods.search',
+    'pdd.ddk.goods.recommend.get',
+    '多多进宝商品推荐查询，详见 https://open.pinduoduo.com/application/document/api?id=pdd.ddk.goods.recommend.get',
     {
-      keyword: z.string().optional().describe('商品关键词，可选'),
-      opt_id: z.number().optional().describe('商品标签id，可选'),
-      cat_id: z.number().optional().describe('商品类目id，可选'),
-      merchant_type: z
+      channel_type: z
         .number()
         .optional()
         .describe(
-          '店铺类型：1-个人，2-企业，3-旗舰店，4-专卖店，5-专营店，6-普通店',
-        ),
-      activity_tags: z
-        .array(z.number())
-        .optional()
-        .describe(
-          '活动商品标记数组，例：[4,7]，4-秒杀，7-百亿补贴，10851-千万补贴，11879-千万神券，10913-招商礼金商品，31-品牌黑标，10564-精选爆品-官方直推爆款，10584-精选爆品-团长推荐，24-品牌高佣',
-        ),
-      is_brand_goods: z.boolean().optional().describe('是否为品牌商品'),
-      range_list: z
-        .object({
-          range_from: z.number().optional().describe('商品券后价格区间，从'),
-          range_to: z.number().optional().describe('商品券后价格区间，到'),
-          range_id: z
-            .number()
-            .optional()
-            .describe(
-              '0-最小成团价 1-券后价 2-佣金比例 3-优惠券价格 4-广告创建时间 5-销量 6-佣金金额 7-店铺描述分 8-店铺物流分 9-店铺服务分 10- 店铺描述分击败同行业百分比 11- 店铺物流分击败同行业百分比 12-店铺服务分击败同行业百分比 13-商品分 17 -优惠券/最小团购价 18-过去两小时pv 19-过去两小时销量',
-            ),
-        })
-        .optional()
-        .describe(
-          '筛选范围列表 样例：[{"range_id":0,"range_from":1,"range_to":1500},{"range_id":1,"range_from":1,"range_to":1500}]',
+          '频道类型：0-1.9包邮, 1-今日爆款, 2-品牌清仓, 3-相似商品推荐, 4-猜你喜欢, 5-实时热销, 6-实时收益, 7-今日畅销, 8-高佣榜单，默认5',
         ),
       page: z.number().optional().default(1).describe('页码，默认1'),
       page_size: z
@@ -45,6 +20,34 @@ export const register = (server: McpServer) => {
         .optional()
         .default(100)
         .describe('每页数量，默认100'),
+      pid: z.string().optional().describe('推广位id'),
+      custom_parameters: z
+        .string()
+        .optional()
+        .describe(
+          '自定义参数，为链接打上自定义标签；自定义参数最长限制64个字节',
+        ),
+      goods_sign_list: z
+        .array(z.string())
+        .optional()
+        .describe(
+          '商品goodsSign列表，相似商品推荐场景时必传，仅支持单个goodsSign',
+        ),
+      activity_tags: z
+        .array(z.number())
+        .optional()
+        .describe(
+          '活动商品标记数组，例：[4,7]，4-秒杀，7-百亿补贴，10851-千万补贴，11879-千万神券，10913-招商礼金商品，31-品牌黑标，10564-精选爆品-官方直推爆款，10584-精选爆品-团长推荐，24-品牌高佣',
+        ),
+      cat_id: z.number().optional().describe('商品类目id'),
+      goods_id_list: z
+        .array(z.string())
+        .optional()
+        .describe('商品id列表，相似商品推荐场景时必传，仅支持单个goodsId'),
+      list_id: z
+        .string()
+        .optional()
+        .describe('翻页时建议填入前页返回的list_id值'),
       sort_type: z
         .number()
         .optional()
@@ -59,13 +62,13 @@ export const register = (server: McpServer) => {
         ),
     },
     async (args) => {
-      const data = await getPddApi('pdd.ddk.goods.search', {
+      const data = await getPddApi('pdd.ddk.goods.recommend.get', {
         ...args,
-        pid: '43033220_306360862',
-        custom_parameters: { uid: 'github_11585769' },
+        pid: args.pid || '43033220_306360862',
+        custom_parameters: args.custom_parameters || 'uid=github_11585769',
       })
       return {
-        content: [{ type: 'text', text: JSON.stringify(data, null, 1) }],
+        content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
       }
     },
   )

@@ -1,0 +1,9 @@
+---
+description: when mentioned /c or 编码 or  开发，use this coding style
+globs: 
+alwaysApply: false
+---
+# 编码规范
+
+1. 函数定义使用箭头函数，不用function 定义
+2. 文件命名使用中划线命名，不用驼峰值，名称越简洁越好

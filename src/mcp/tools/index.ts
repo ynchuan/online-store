@@ -4,7 +4,8 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { register as registerGoods } from './goods'
 import { register as registerCommon } from './common'
-import { register as registerGood } from './good'
+import { register as registerGood } from './recommand'
+import { register as registerHotDaily } from './hotdaily'
 
 export const createServer = () => {
   const server = new McpServer({
@@ -14,6 +15,7 @@ export const createServer = () => {
   registerGoods(server)
   registerCommon(server)
   registerGood(server)
+  registerHotDaily(server)
   return server
 }
 

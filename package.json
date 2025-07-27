@@ -44,9 +44,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.19",
     "inquire": "^0.4.8",
     "inquirer": "^10.2.2",
+    "jsonwebtoken": "^9.0.2",
     "koa": "^3.0.0",
     "koa-bodyparser": "^4.4.1",
     "koa-router": "^13.1.1",

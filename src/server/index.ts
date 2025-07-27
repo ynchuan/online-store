@@ -1,6 +1,7 @@
 import Koa from 'koa'
 import Router from 'koa-router'
 import bodyparser from 'koa-bodyparser'
+import authRoute from './auth'
 
 export default (initRouters: (router: Router) => any) => {
   const router = new Router()
@@ -8,6 +9,7 @@ export default (initRouters: (router: Router) => any) => {
   const app = new Koa()
   app.use(bodyparser())
   app.use(cbk ? cbk() : router.routes())
+  app.use(authRoute.routes())
   app.use(router.allowedMethods())
   const main = app.callback()
   const listen = () => {
