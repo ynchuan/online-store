@@ -1,9 +1,9 @@
 import Router from 'koa-router'
 import {
-  generateAuthorizeToken,
-  verifyAuthorizeToken,
-  isAuthorizeValid,
-  extractTokenFromHeader,
+  authorizeTokenGenerate,
+  authorizeTokenVerify,
+  authorizeIsValid,
+  tokenExtractFromHeader,
   AuthorizeInfo,
 } from '../lib/jwt'
 
@@ -40,7 +40,7 @@ router.get('/', async (ctx) => {
     }
 
     // 生成授信token
-    const token = generateAuthorizeToken(creditInfo)
+    const token = authorizeTokenGenerate(creditInfo)
 
     ctx.body = {
       success: true,
@@ -64,7 +64,7 @@ router.get('/', async (ctx) => {
 router.get('/verify', async (ctx) => {
   try {
     const authHeader = ctx.headers.authorization || ''
-    const token = extractTokenFromHeader(authHeader)
+    const token = tokenExtractFromHeader(authHeader)
 
     if (!token) {
       ctx.status = 401
@@ -76,7 +76,7 @@ router.get('/verify', async (ctx) => {
     }
 
     // 验证token
-    const creditInfo = verifyAuthorizeToken(token)
+    const creditInfo = authorizeTokenVerify(token)
     if (!creditInfo) {
       ctx.status = 401
       ctx.body = {
@@ -87,7 +87,7 @@ router.get('/verify', async (ctx) => {
     }
 
     // 检查授信是否有效
-    const isValid = isAuthorizeValid(creditInfo)
+    const isValid = authorizeIsValid(creditInfo)
 
     ctx.body = {
       success: true,
@@ -109,10 +109,10 @@ router.get('/verify', async (ctx) => {
 })
 
 // 更新授信使用额度接口
-router.put('/usage', async (ctx) => {
+router.get('/usage', async (ctx) => {
   try {
     const authHeader = ctx.headers.authorization || ''
-    const token = extractTokenFromHeader(authHeader)
+    const token = tokenExtractFromHeader(authHeader)
 
     if (!token) {
       ctx.status = 401
@@ -123,7 +123,7 @@ router.put('/usage', async (ctx) => {
       return
     }
 
-    const { amount } = ctx.request.body as any
+    const { amount } = ctx.request.query as any
 
     if (!amount || amount <= 0) {
       ctx.status = 400
@@ -135,7 +135,7 @@ router.put('/usage', async (ctx) => {
     }
 
     // 验证token
-    const creditInfo = verifyAuthorizeToken(token)
+    const creditInfo = authorizeTokenVerify(token)
     if (!creditInfo) {
       ctx.status = 401
       ctx.body = {
@@ -146,7 +146,7 @@ router.put('/usage', async (ctx) => {
     }
 
     // 检查授信是否有效
-    if (!isAuthorizeValid(creditInfo)) {
+    if (!authorizeIsValid(creditInfo)) {
       ctx.status = 400
       ctx.body = {
         success: false,
@@ -172,7 +172,7 @@ router.put('/usage', async (ctx) => {
     }
 
     // 生成新的token
-    const newToken = generateAuthorizeToken(updatedAuthorizeInfo)
+    const newToken = authorizeTokenGenerate(updatedAuthorizeInfo)
 
     ctx.body = {
       success: true,
@@ -198,7 +198,7 @@ router.put('/usage', async (ctx) => {
 router.get('/info', async (ctx) => {
   try {
     const authHeader = ctx.headers.authorization || ''
-    const token = extractTokenFromHeader(authHeader)
+    const token = tokenExtractFromHeader(authHeader)
 
     if (!token) {
       ctx.status = 401
@@ -210,7 +210,7 @@ router.get('/info', async (ctx) => {
     }
 
     // 验证token
-    const creditInfo = verifyAuthorizeToken(token)
+    const creditInfo = authorizeTokenVerify(token)
     if (!creditInfo) {
       ctx.status = 401
       ctx.body = {
@@ -225,7 +225,7 @@ router.get('/info', async (ctx) => {
       data: {
         creditInfo,
         remainingAuthorize: creditInfo.creditLimit - creditInfo.creditUsed,
-        isValid: isAuthorizeValid(creditInfo),
+        isValid: authorizeIsValid(creditInfo),
       },
       message: '获取授信信息成功',
     }

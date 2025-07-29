@@ -2,10 +2,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { register as registerGoods } from './goods'
-import { register as registerCommon } from './common'
-import { register as registerGood } from './recommand'
-import { register as registerHotDaily } from './hotdaily'
+import { register as registerGoods } from './pdd/goods'
+import { register as registerCommon } from './pdd/common'
+import { register as registerGood } from './pdd/recommand'
+import { register as registerHotDaily } from './normal/hotdaily'
 
 export const createServer = () => {
   const server = new McpServer({
@@ -16,6 +16,7 @@ export const createServer = () => {
   registerCommon(server)
   registerGood(server)
   registerHotDaily(server)
+
   return server
 }
 

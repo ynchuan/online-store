@@ -1,10 +1,10 @@
 import { Context, Next } from 'koa'
 import {
-  verifyAuthorizeToken,
-  extractTokenFromHeader,
-  isAuthorizeValid,
+  authorizeTokenVerify,
+  tokenExtractFromHeader,
+  authorizeIsValid,
   AuthorizeInfo,
-} from './jwt'
+} from '../lib/jwt'
 
 // 扩展Context类型以包含授信信息
 declare module 'koa' {
@@ -14,10 +14,10 @@ declare module 'koa' {
 }
 
 // 授信验证中间件
-export const creditAuthMiddleware = async (ctx: Context, next: Next) => {
+export const authorizeMiddleware = async (ctx: Context, next: Next) => {
   try {
     const authHeader = ctx.headers.authorization || ''
-    const token = extractTokenFromHeader(authHeader)
+    const token = tokenExtractFromHeader(authHeader)
 
     if (!token) {
       ctx.status = 401
@@ -29,7 +29,7 @@ export const creditAuthMiddleware = async (ctx: Context, next: Next) => {
     }
 
     // 验证token
-    const creditInfo = verifyAuthorizeToken(token)
+    const creditInfo = authorizeTokenVerify(token)
     if (!creditInfo) {
       ctx.status = 401
       ctx.body = {
@@ -40,7 +40,7 @@ export const creditAuthMiddleware = async (ctx: Context, next: Next) => {
     }
 
     // 检查授信是否有效
-    if (!isAuthorizeValid(creditInfo)) {
+    if (!authorizeIsValid(creditInfo)) {
       ctx.status = 401
       ctx.body = {
         success: false,
@@ -58,7 +58,7 @@ export const creditAuthMiddleware = async (ctx: Context, next: Next) => {
     ctx.status = 500
     ctx.body = {
       success: false,
-      message: '授信验证失败',
+      message: '授信校验失败',
     }
   }
 }

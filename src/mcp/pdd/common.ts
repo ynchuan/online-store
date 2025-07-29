@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { getPddApi } from '../../lib/utils'
@@ -57,22 +56,22 @@ export const register = (server: McpServer) => {
       }
     },
   )
-  server.tool(
-    'wechat.oauth2.getuserinfo',
-    '微信登录，详见 https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html',
-    {},
-    async ({}, extra) => {
-      const ret = await wxLogin.doLogin()
-      return { content: [{ type: 'text', text: JSON.stringify(ret, null, 1) }] }
-    },
-  )
-  server.tool(
-    'github.oauth2.getuserinfo',
-    'GITHUB 登录，详见 https://github.com/settings/applications/2990671',
-    {},
-    async ({}, extra) => {
-      const ret = await githubLogin.doLogin()
-      return { content: [{ type: 'text', text: JSON.stringify(ret, null, 1) }] }
-    },
-  )
+  // server.tool(
+  //   'wechat.oauth2.getuserinfo',
+  //   '微信登录，详见 https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html',
+  //   {},
+  //   async ({}, extra) => {
+  //     const ret = await wxLogin.doLogin()
+  //     return { content: [{ type: 'text', text: JSON.stringify(ret, null, 1) }] }
+  //   },
+  // )
+  // server.tool(
+  //   'github.oauth2.getuserinfo',
+  //   'GITHUB 登录，详见 https://github.com/settings/applications/2990671',
+  //   {},
+  //   async ({}, extra) => {
+  //     const ret = await githubLogin.doLogin()
+  //     return { content: [{ type: 'text', text: JSON.stringify(ret, null, 1) }] }
+  //   },
+  // )
 }
