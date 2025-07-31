@@ -16,7 +16,7 @@ export const register = async (server: any) => {
   server.tool(
     'get_available_routes',
     '获取所有可用的媒体热搜数据',
-    z.object({}),
+    {},
     async () => {
       try {
         const data = await getAvailableRoute()
@@ -37,11 +37,12 @@ export const register = async (server: any) => {
   server.tool(
     'get_hot_data',
     '获取指定媒体热搜数据，媒体渠道是 `get_available_routes` 中返回的媒体渠道值',
-    z.object({
-      names: z.array(
-        z.string().describe('接口名称，如: zhihu, weibo, bilibili等'),
-      ),
-    }),
+    {
+      names: z
+        .array(z.string())
+        .nonempty('至少需要提供一个接口名称')
+        .describe('接口名称数组，如: zhihu, weibo, bilibili 等'),
+    },
     async ({ names }: { names: string[] }) => {
       // 获取热搜数据
       const results = await Promise.all(

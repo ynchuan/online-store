@@ -6,6 +6,7 @@ import { register as registerGoods } from './pdd/goods'
 import { register as registerCommon } from './pdd/common'
 import { register as registerGood } from './pdd/recommand'
 import { register as registerHotDaily } from './normal/hotdaily'
+import { register as registerMeituan } from './normal/meituan'
 
 export const createServer = () => {
   const server = new McpServer({
@@ -16,7 +17,7 @@ export const createServer = () => {
   registerCommon(server)
   registerGood(server)
   registerHotDaily(server)
-
+  registerMeituan(server)
   return server
 }
 
