@@ -32,7 +32,7 @@ export const register = (server: McpServer) => {
       const data = await getPddApi('pdd.ddk.rp.prom.url.generate', {
         p_id_list: [p_id],
         channel_type: '10',
-        custom_parameters: { uid: 'github_11585769' },
+        custom_parameters: { uid },
       })
       return {
         content: [{ type: 'text', text: JSON.stringify(data, null, 1) }],

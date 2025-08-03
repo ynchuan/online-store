@@ -1,17 +1,21 @@
 import { z } from 'zod'
 
 // 获取美团热门推荐数据
-export const getMeituanHotRecommend = async (cityId: string = '1') => {
+const getMeituanHotRecommend = async (cityId: string = '1') => {
   try {
     const url = `https://apimobile.meituan.com/group/v1/deal/searchpage/hotword/city/divide/hotrecommend/1?homeBusinessAreaId=673&dynamicTemplate=1&cateId=-1&supportSplitHistory=2&refreshType=discovery%2Crecommend&locCityid=${cityId}&entrance=1&homeCreateTime=${Date.now()}&search_accessibility=0&searchLongTermControl=rest_flow&homePageAddressFromLocate=1&homePagePos=40.0196119%2C116.4679146&utm_medium=android&utm_term=1200390203&version_name=12.39.203&userid=-1&p_appid=10&csecplatform=1&csecversionname=12.39.203&csecpkgname=com.sankuai.meituan&csecversion=1.0.0.55`
-
+    const defaultCookie =
+      'AgHlJUPST0mt6GkOT4YEQvxeeutVZrNHTCTHn3NUen6uBksODi_xzJEyjsr9IoeM5dfOlBP8R_di4AAAAAAzKwAALuUr7LOcwWLInHrhxWF7Qai2_1yzMI4wEZFIgvU2ALMeGRz0Hk_yjmuaxAZj-LHf'
     const response = await fetch(url, {
       headers: {
         Accept: 'application/json',
+        Cookie: defaultCookie, // 如需支持外部传入 cookie，可将 defaultCookie 替换为参数
       },
     })
     const data = await response.json()
-    return data
+    return data.data?.segmentsV2?.find(
+      (item: any) => item.template === 'searchRank',
+    )?.hotwordSegments
   } catch (error) {
     console.error('获取美团热门推荐失败:', error)
     return null
@@ -19,16 +23,15 @@ export const getMeituanHotRecommend = async (cityId: string = '1') => {
 }
 
 // 获取美团美食排行榜数据
-export const getMeituanFoodRank = async (
+const getMeituanFoodRank = async (
   cityId: string = '1',
   cateId: string = '1',
 ) => {
   try {
     const url = `https://apimeishi.meituan.com/meishi/search/homepage/foodRank?cityId=${cityId}&userid=-1&requestor=mrn&mypos=40.0196119%2C116.4679156&districtId=&cateId=${cateId}&locCityId=${cityId}&wtt_region_version=&cn_pt=RN&utm_source=meituaninternaltest&utm_medium=android&utm_term=1200390203`
-
     const response = await fetch(url)
     const data = await response.json()
-    return data
+    return data?.data?.ranks
   } catch (error) {
     console.error('获取美团美食排行榜失败:', error)
     return null
@@ -38,7 +41,7 @@ export const getMeituanFoodRank = async (
 // 注册函数
 export const register = async (server: any) => {
   server.tool(
-    'get_meituan_hot_recommend',
+    'get.meituan.hot.recommend',
     '获取美团热门推荐数据',
     {
       cityId: z.string().optional().describe('城市ID，默认为1（北京）'),
@@ -46,27 +49,22 @@ export const register = async (server: any) => {
     async ({ cityId = '1' }: { cityId?: string }) => {
       try {
         const data = await getMeituanHotRecommend(cityId)
-        if (!data) {
+        if (data && Array.isArray(data)) {
+          const result =
+            `美团热门推荐 (城市ID: ${cityId})\n` +
+            data
+              .map(
+                (item: any) =>
+                  `- ${item.title}\n${item.items.map((it: any) => it.query).join('\n')}`,
+              )
+              .join('\n\n')
           return {
-            content: [{ type: 'text', text: '获取美团热门推荐数据失败' }],
+            content: [{ type: 'text', text: result }],
           }
-        }
-
-        // 格式化返回数据
-        let result = `美团热门推荐 (城市ID: ${cityId})\n`
-        if (data.data && Array.isArray(data.data)) {
-          result += data.data
-            .map(
-              (item: any, index: number) =>
-                `${index + 1}. ${item.title || item.name || '未知'}`,
-            )
-            .join('\n')
         } else {
-          result += JSON.stringify(data, null, 2)
-        }
-
-        return {
-          content: [{ type: 'text', text: result }],
+          return {
+            content: [{ type: 'text', text: '未获取到美团热搜数据' }],
+          }
         }
       } catch (error: any) {
         return {
@@ -79,7 +77,7 @@ export const register = async (server: any) => {
   )
 
   server.tool(
-    'get_meituan_food_rank',
+    'get.meituan.food.rank',
     '获取美团美食排行榜数据',
     {
       cityId: z.string().optional().describe('城市ID，默认为1（北京）'),
@@ -94,10 +92,10 @@ export const register = async (server: any) => {
     }) => {
       try {
         const data = await getMeituanFoodRank(cityId, cateId)
-        if (data && data.data && Array.isArray(data.data.ranks)) {
+        if (data && Array.isArray(data)) {
           const text =
             `美团美食排行榜 (城市ID: ${cityId}, 分类ID: ${cateId})\n` +
-            data.data.ranks
+            data
               .map((item: any) => {
                 return `${item.title} 热搜榜\n${item.items.map((it: any) => `${it.name}`).join('\n')}`
               })

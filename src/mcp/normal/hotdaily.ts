@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 // 获取所有可用的接口列表
-export const getAvailableRoute = async () => {
+export const getAvailableMediaes = async () => {
   try {
     const response = await fetch('https://dailyhot.ynchuan.asia/all')
     const data = await response.json()
@@ -14,12 +14,12 @@ export const getAvailableRoute = async () => {
 // 注册函数
 export const register = async (server: any) => {
   server.tool(
-    'get_available_routes',
+    'get.available.hotmedia',
     '获取所有可用的媒体热搜数据',
     {},
     async () => {
       try {
-        const data = await getAvailableRoute()
+        const data = await getAvailableMediaes()
         const text = data
           .filter((route: any) => route.path !== null)
           .map((route: any) => route.name)
@@ -35,8 +35,8 @@ export const register = async (server: any) => {
     },
   )
   server.tool(
-    'get_hot_data',
-    '获取指定媒体热搜数据，媒体渠道是 `get_available_routes` 中返回的媒体渠道值',
+    'get.hotdaily.data',
+    '获取指定媒体热搜数据，媒体渠道是 `get.available.hotmedia` 中返回的媒体渠道值',
     {
       names: z
         .array(z.string())
@@ -53,7 +53,7 @@ export const register = async (server: any) => {
             )
             const data = await response.json()
             return `${name} ${data.title} 更新时间：${data.updateTime}\n${data.data
-              .map((item: any) => `- 标题：${item.title} 链接：${item.url}`)
+              .map((item: any) => `- [${item.title}](${item.url})`)
               .join('\n')}`
           } catch (error) {
             return `${name} 未获取到热搜数据`

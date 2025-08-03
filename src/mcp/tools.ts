@@ -4,7 +4,8 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { register as registerGoods } from './pdd/goods'
 import { register as registerCommon } from './pdd/common'
-import { register as registerGood } from './pdd/recommand'
+import { register as registerRec } from './pdd/recommand'
+import { register as registerGoodsDetail } from './pdd/detail'
 import { register as registerHotDaily } from './normal/hotdaily'
 import { register as registerMeituan } from './normal/meituan'
 
@@ -13,11 +14,13 @@ export const createServer = () => {
     name: 'mcp-online-store',
     version: '1.0.0',
   })
-  registerGoods(server)
-  registerCommon(server)
-  registerGood(server)
+
   registerHotDaily(server)
   registerMeituan(server)
+  registerCommon(server)
+  registerGoods(server)
+  registerRec(server)
+  registerGoodsDetail(server)
   return server
 }
 
