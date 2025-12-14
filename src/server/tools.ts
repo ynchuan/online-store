@@ -1,6 +1,6 @@
 import { ParameterizedContext } from 'koa'
 import Router from 'koa-router'
-import { createServer } from '../mcp/tools'
+import { createServer } from '../mcp/server'
 
 const router = new Router({ prefix: '/tools' })
 const server: any = createServer()

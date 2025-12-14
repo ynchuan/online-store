@@ -1,5 +1,5 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { createServer } from './tools'
+import { createServer } from './server'
 
 export default () => {
   const server = createServer()

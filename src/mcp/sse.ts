@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js'
-import { createServer, getSseTransports } from './tools'
+import { createServer, getSseTransports } from './server'
 
 export default (router: Router) => {
   const server = createServer()

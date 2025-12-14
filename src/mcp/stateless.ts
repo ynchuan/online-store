@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
-import { createServer } from './tools'
+import { createServer } from './server'
 import { unValidedMsg, logger } from '../lib/utils'
 
 export default (router: Router) => {
