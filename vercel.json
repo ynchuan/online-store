@@ -8,15 +8,19 @@
   "rewrites": [
     {
       "source": "/nhsa/(.*)",
-      "destination": "api/nhsa.ts"
+      "destination": "/api/nhsa.ts"
     },
     {
       "source": "/twikoo/(.*)",
-      "destination": "api/twikoo.ts"
+      "destination": "/api/twikoo.ts"
     },
     {
       "source": "/dailyhot",
       "destination": "/api/dailyhot.ts"
+    },
+    {
+      "source": "/hello",
+      "destination": "/api/hello.ts"
     },
     {
       "source": "/(.*)",

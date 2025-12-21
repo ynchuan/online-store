@@ -1,5 +1,8 @@
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
+// http://localhost:3000/nhsa/api/drug/getsearchcondition
+// https://wx.nhsa.gov.cn/#/pages/NRDL/index/index
+
 export default (req: any, res: any) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS')
