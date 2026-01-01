@@ -15,11 +15,11 @@
       "destination": "/api/twikoo.ts"
     },
     {
-      "source": "/dailyhot",
+      "source": "/dailyhot/(.*)",
       "destination": "/api/dailyhot.ts"
     },
     {
-      "source": "/hello",
+      "source": "/hello/(.*)",
       "destination": "/api/hello.ts"
     },
     {
